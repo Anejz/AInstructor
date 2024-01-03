@@ -63,22 +63,22 @@ document.getElementById('fileUpload').addEventListener('change', function(event)
 let mediaRecorder;
 let audioChunks = [];
 
-
-
 document.getElementById('startRecording').addEventListener('click', function() {
     navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
-        mediaRecorder = new MediaRecorder(stream);
+        console.log("Stream active:", stream.active); // Debugging log
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' }); // Set MIME type explicitly
         audioChunks = [];
 
-        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-        mediaRecorder.onstop = () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
-            document.getElementById('audioPlayback').src = URL.createObjectURL(audioBlob);
-            document.getElementById('audioPlayback').hidden = false;
+        mediaRecorder.ondataavailable = event => {
+            console.log("Data available:", event.data.size); // Debugging log
+            if (event.data.size > 0) {
+                audioChunks.push(event.data);
+            }
         };
 
-        mediaRecorder.start();
+        mediaRecorder.start(1000); // Use timeslice
+
         document.getElementById('stopRecording').disabled = false;
     })
     .catch(err => {
@@ -90,8 +90,14 @@ document.getElementById('startRecording').addEventListener('click', function() {
 document.getElementById('stopRecording').addEventListener('click', function() {
     mediaRecorder.stop();
     document.getElementById('stopRecording').disabled = true;
-});
 
+    mediaRecorder.onstop = () => {
+        console.log("Recording stopped. Chunks length:", audioChunks.length); // Debugging log
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); // Set MIME type explicitly
+        document.getElementById('audioPlayback').src = URL.createObjectURL(audioBlob);
+        document.getElementById('audioPlayback').hidden = false;
+    };
+});
 document.getElementById('reformulate-btn').addEventListener('click', function() {
     const transcriptionText = document.getElementById('transcription-textarea').textContent;
 
