@@ -15,15 +15,17 @@
         <form id="upload-form">
             
             <div class="row">
+                <label id="uploadLabel" for="fileUpload" class="form-label">Upload your sound file</label>
                 <div class="col">
-                    <label for="fileUpload" class="form-label">Upload your sound file</label>
+                    
                     <input type="file" class="form-control" id="fileUpload" accept="audio/*">
                 </div>
                 <div class="col">
                     <audio id="audioPlayback" controls hidden ></audio>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Transcribe</button>
+            
+            <button id="transcribeButton" type="submit" class="btn btn-primary">Transcribe</button>
             
             <div class="mb-3">
                 <label for="language">Language:</label>

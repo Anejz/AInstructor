@@ -39,6 +39,36 @@ p {
     margin-bottom: 2rem;
 }
 
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
+  
+  /* Style the buttons that are used to open the tab content */
+  .tablink {
+    background-color: #555;
+    color: white;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    font-size: 17px;
+    width: 50%;
+  }
+  
+  /* Change background color of buttons on hover */
+  .tablink:hover {
+    background-color: #777;
+  }
+  
+  /* Create an active/current "tab button" class */
+  .tablink.active {
+    background-color: #ccc;
+    color: black;
+  }
 /* Form Styles */
 .form-control {
     background-color: #fff;
@@ -86,6 +116,10 @@ p {
     margin-bottom: var(--spacing-unit);
 }
 
+#audio-player {
+    margin-bottom: 0;
+
+}
 /* Responsive Typography */
 @media (max-width: 768px) {
     body {
