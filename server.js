@@ -5,9 +5,13 @@ const fs = require('fs');
 const { OpenAI } = require('openai');
 const dotenv = require('dotenv');
 
+
+
 dotenv.config();
 const app = express();
 const openai = new OpenAI();
+
+app.get('/favicon.ico', (req, res) => res.status(204)); // Send a No Content response
 
 app.use(cors());
 app.use(express.static('public'));
@@ -114,3 +118,5 @@ app.post('/process-transcript', async (req, res) => {
         res.status(500).send('Error processing request');
     }
 });
+
+

@@ -1,3 +1,4 @@
+
 // script.js
 document.getElementById('upload-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -60,44 +61,79 @@ document.getElementById('fileUpload').addEventListener('change', function(event)
 });
 
 // Audio Recording
+
+
+// 1. Initialize MediaRecorder
 let mediaRecorder;
 let audioChunks = [];
 
-document.getElementById('startRecording').addEventListener('click', function() {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(stream => {
-        console.log("Stream active:", stream.active); // Debugging log
-        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' }); // Set MIME type explicitly
-        audioChunks = [];
+function initMediaRecorder(stream) {
+    console.log('Initializing MediaRecorder with the stream:', stream);
+    mediaRecorder = new MediaRecorder(stream);
 
-        mediaRecorder.ondataavailable = event => {
-            console.log("Data available:", event.data.size); // Debugging log
-            if (event.data.size > 0) {
-                audioChunks.push(event.data);
-            }
-        };
-
-        mediaRecorder.start(1000); // Use timeslice
-
-        document.getElementById('stopRecording').disabled = false;
-    })
-    .catch(err => {
-        console.error("Error accessing the microphone: ", err);
-        alert("Error accessing the microphone: " + err.message);
+    mediaRecorder.addEventListener('dataavailable', event => {
+        if (event.data.size > 0) {
+            audioChunks.push(event.data);
+        }
     });
+    function setRecordingAsFile(audioBlob, filename) {
+        const audioFile = new File([audioBlob], filename, { type: 'audio/webm' });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(audioFile);
+        document.getElementById('fileInput').files = dataTransfer.files;
+    }
+    // Updated to handle promises and errors more effectively
+    mediaRecorder.addEventListener('stop', async () => {
+        try {
+            if (audioChunks.length > 0) {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                console.log('Recording stopped, audio available at:', audioUrl);
+                const audioElement = document.getElementById('audioPlayback');
+                const uploadLabel = document.getElementById('uploadLabel');
+                audioElement.src = audioUrl;
+                audioElement.hidden = false;
+                setRecordingAsFile(audioBlob, "recording.webm");
+                audioElement.load(); // Ensure the audio element loads the new blob URL
+                audioElement.play(); // Optional: Attempt to play the audio immediately
+            } else {
+                console.error('No audio chunks available.');
+            }
+        } catch (error) {
+            console.error('Error after stopping recording:', error);
+        }
+    });
+}
+
+// 2. Test the Stream
+document.getElementById('startRecording').addEventListener('click', () => {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            if (stream.active && stream.getAudioTracks().length > 0) {
+                console.log('Stream is active with audio tracks:', stream.getAudioTracks());
+                initMediaRecorder(stream);
+                mediaRecorder.start();
+                document.getElementById('stopRecording').disabled = false;
+            } else {
+                console.error('Stream is not active or does not have audio tracks.');
+            }
+        })
+        .catch(err => {
+            console.error("Error accessing the microphone: ", err);
+            alert("Error accessing the microphone: " + err.message);
+        });
 });
 
-document.getElementById('stopRecording').addEventListener('click', function() {
-    mediaRecorder.stop();
-    document.getElementById('stopRecording').disabled = true;
-
-    mediaRecorder.onstop = () => {
-        console.log("Recording stopped. Chunks length:", audioChunks.length); // Debugging log
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); // Set MIME type explicitly
-        document.getElementById('audioPlayback').src = URL.createObjectURL(audioBlob);
-        document.getElementById('audioPlayback').hidden = false;
-    };
+// 3. Check Blob Creation and 4. Audio Playback are handled in the 'stop' event listener
+document.getElementById('stopRecording').addEventListener('click', () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        document.getElementById('stopRecording').disabled = true;
+    } else {
+        console.error('MediaRecorder is not recording.');
+    }
 });
+
 document.getElementById('reformulate-btn').addEventListener('click', function() {
     const transcriptionText = document.getElementById('transcription-textarea').textContent;
 
