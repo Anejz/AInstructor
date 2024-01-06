@@ -1,4 +1,21 @@
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablink");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
 
+// Set default active tab on page load
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.tablink').click(); // Open the first tab
+});
 // script.js
 document.getElementById('upload-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -52,7 +69,7 @@ function updateProgressBar(percent) {
 
 // Audio Playback
 document.getElementById('fileUpload').addEventListener('change', function(event) {
-    const audioPlayer = document.getElementById('audioPlayback');
+    const audioPlayer = document.getElementById('audioPlaybackUpload');
     const file = event.target.files[0];
     if (file) {
         audioPlayer.src = URL.createObjectURL(file);
@@ -89,7 +106,7 @@ function initMediaRecorder(stream) {
                 const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                 const audioUrl = URL.createObjectURL(audioBlob);
                 console.log('Recording stopped, audio available at:', audioUrl);
-                const audioElement = document.getElementById('audioPlayback');
+                const audioElement = document.getElementById('audioPlaybackRecord');
                 const uploadLabel = document.getElementById('uploadLabel');
                 audioElement.src = audioUrl;
                 audioElement.hidden = false;
