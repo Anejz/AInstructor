@@ -15,6 +15,9 @@ body {
     font-family: 'Open Sans', sans-serif;
     line-height: 1.6;
 }
+.hidden {
+    display: none;
+}
 
 /* Title with Background Image */
 h1.text-center {
@@ -115,3 +118,17 @@ audio {
 }
 
 /* Additional styles can be added here */
+.recording {
+    background-color: red; /* Change as per your color scheme */
+    color: white;
+}
+
+/* Hide the stop recording button initially */
+#stopRecording {
+    display: none;
+}
+
+/* When the stop recording button is visible */
+.stop-recording-shown {
+    display: block;
+}
