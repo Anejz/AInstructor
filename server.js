@@ -102,7 +102,7 @@ app.post('/process-transcript', async (req, res) => {
                 break;
             case 'generate-notes':
                 response = await openai.chat.completions.create({
-                    messages: [{ role: "system", content: "You are a note-taker. Summarize the following text into key points and concepts. Write with breaks and bulletpoints. Use <br> tags to implement breaks" },
+                    messages: [{ role: "system", content: "You are a note-taker. Summarize the following text into key points and concepts. Write with breaks and bulletpoints. Always write <br> before -" },
                                { role: "user", content: transcription }],
                     model: "gpt-3.5-turbo-1106",
                 });
