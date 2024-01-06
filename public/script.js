@@ -187,6 +187,7 @@ function initMediaRecorder(stream) {
 
 // 2. Test the Stream
 document.getElementById('startRecording').addEventListener('click', () => {
+    event.preventDefault();
     navigator.mediaDevices.getUserMedia({ audio: true })
         .then(stream => {
             if (stream.active && stream.getAudioTracks().length > 0) {
@@ -224,7 +225,7 @@ function updateRecordingUI(isRecording) {
         stopBtn.style.display = 'inline-block';
     } else {
         startBtn.classList.remove('recording');
-        startBtn.textContent = 'Start Recording';
+        startBtn.innerHTML = '<i class="fa-solid fa-microphone"></i> Start Recording';
         stopBtn.style.display = 'none';
     }
 }
