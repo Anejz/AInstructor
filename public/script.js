@@ -229,15 +229,34 @@ function updateRecordingUI(isRecording) {
         stopBtn.style.display = 'none';
     }
 }
+let currentFilename = null;
 document.getElementById('save-transcription-btn').addEventListener('click', function() {
     const transcriptionText = document.getElementById('transcription-textarea').value;
-    const filename = prompt('Enter a filename for your transcription:');
-
-    if (!filename) {
-        alert('Filename is required to save the transcription.');
+    if (!currentFilename) {
+        // Show the filename input if a filename has not been set
+        document.getElementById('filename-input-container').classList.remove('hidden');
+    } else {
+        // Proceed to save the transcription with the current filename
+        saveCurrentTranscription();
+    }
+});
+document.getElementById('save-filename-btn').addEventListener('click', function() {
+    const filenameInput = document.getElementById('filename-input').value;
+    if (!filenameInput.trim()) {
+        alert('Filename is required.');
         return;
     }
+    currentFilename = filenameInput.trim() + '.txt'; // Append .txt extension
+    document.getElementById('filename-input-container').classList.add('hidden');
+    saveCurrentTranscription(); // Save the transcription after setting the filename
+});
 
+function saveCurrentTranscription() {
+    const transcriptionText = document.getElementById('transcription-textarea').value;
+    saveTranscription(transcriptionText, currentFilename);
+}
+
+function saveTranscription(transcriptionText, filename) {
     fetch('/save-transcription', {
         method: 'POST',
         headers: {
@@ -251,12 +270,18 @@ document.getElementById('save-transcription-btn').addEventListener('click', func
             throw new Error(data.error);
         }
         alert('Transcription saved successfully.');
-        fetchAndDisplaySavedFiles(); // Refresh the sidebar file list
     })
     .catch(error => {
         console.error('Error:', error);
         alert('Error saving transcription.');
     });
+}
+
+document.getElementById('transcription-textarea').addEventListener('blur', function() {
+    if (currentFilename) {
+        const transcriptionText = this.value;
+        saveTranscription(transcriptionText, currentFilename);
+    }
 });
 function fetchAndDisplaySavedFiles() {
     fetch('/list-saved-transcriptions')
@@ -341,11 +366,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.tablink').click(); // Open the first tab
     setTranscriptionVisibility(false); // Hide transcription-related elements on page load
 });
-
+let selectedFileContent = '';
 document.getElementById('send-button').addEventListener('click', function() {
     const userInput = document.getElementById('user-input').value;
     if (!userInput.trim()) return; // Avoid sending empty messages
 
+    const messageData = {
+        message: userInput,
+        fileContent: selectedFileContent
+    };
     // Display user message
     addMessage('User', userInput, 'user-message', 'message-bubble-user');
 
@@ -365,6 +394,20 @@ document.getElementById('send-button').addEventListener('click', function() {
     // Clear input field
     document.getElementById('user-input').value = '';
 });
+document.getElementById('user-input').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent the default form submission behavior
+        document.getElementById('send-button').click(); // Trigger click on the send button
+    }
+});
+function selectFile(filename) {
+    fetch(`/get-file-content?filename=${encodeURIComponent(filename)}`)
+    .then(response => response.json())
+    .then(data => {
+        selectedFileContent = data.content; // Assuming the server sends back the file content
+    })
+    .catch(error => console.error('Error loading file content:', error));
+}
 
 function addMessage(sender, message, messageClass, bubbleClass) {
     const chatMain = document.querySelector('.chat-main');
