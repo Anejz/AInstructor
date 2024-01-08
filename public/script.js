@@ -229,6 +229,55 @@ function updateRecordingUI(isRecording) {
         stopBtn.style.display = 'none';
     }
 }
+document.getElementById('save-transcription-btn').addEventListener('click', function() {
+    const transcriptionText = document.getElementById('transcription-textarea').value;
+    const filename = prompt('Enter a filename for your transcription:');
+
+    if (!filename) {
+        alert('Filename is required to save the transcription.');
+        return;
+    }
+
+    fetch('/save-transcription', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ transcription: transcriptionText, filename: filename })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        alert('Transcription saved successfully.');
+        fetchAndDisplaySavedFiles(); // Refresh the sidebar file list
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving transcription.');
+    });
+});
+function fetchAndDisplaySavedFiles() {
+    fetch('/list-saved-transcriptions')
+    .then(response => response.json())
+    .then(data => {
+        const fileListElement = document.getElementById('saved-files-list');
+        fileListElement.innerHTML = ''; // Clear existing list
+        data.files.forEach(file => {
+            const fileElement = document.createElement('li');
+            fileElement.textContent = file;
+            fileElement.onclick = () => openSavedFile(file);
+            fileListElement.appendChild(fileElement);
+        });
+    })
+    .catch(error => console.error('Error fetching saved files:', error));
+}
+
+function openSavedFile(filename) {
+    // Fetch and display the contents of the selected file
+    // [To be implemented]
+}
 document.getElementById('reformulate-btn').addEventListener('click', function() {
     const transcriptionText = document.getElementById('transcription-textarea').textContent;
 
@@ -292,3 +341,48 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.tablink').click(); // Open the first tab
     setTranscriptionVisibility(false); // Hide transcription-related elements on page load
 });
+
+document.getElementById('send-button').addEventListener('click', function() {
+    const userInput = document.getElementById('user-input').value;
+    if (!userInput.trim()) return; // Avoid sending empty messages
+
+    // Display user message
+    addMessage('User', userInput, 'user-message', 'message-bubble-user');
+
+    // Send to server and get response
+    fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userInput })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Display GPT's response
+        addMessage('AI', data.reply, 'ai-message', 'message-bubble-ai');
+    })
+    .catch(error => console.error('Error:', error));
+
+    // Clear input field
+    document.getElementById('user-input').value = '';
+});
+
+function addMessage(sender, message, messageClass, bubbleClass) {
+    const chatMain = document.querySelector('.chat-main');
+    const messageWrapper = document.createElement('div');
+    messageWrapper.classList.add(messageClass);
+
+    const avatar = document.createElement('div');
+    avatar.classList.add(sender === 'User' ? 'user-avatar' : 'ai-avatar');
+    avatar.textContent = sender === 'User' ? 'U' : 'AI';
+
+    const messageBubble = document.createElement('div');
+    messageBubble.classList.add(bubbleClass);
+    messageBubble.textContent = message;
+
+    messageWrapper.appendChild(avatar);
+    messageWrapper.appendChild(messageBubble);
+    chatMain.appendChild(messageWrapper);
+
+    // Scroll to the latest message
+    chatMain.scrollTop = chatMain.scrollHeight;
+}
