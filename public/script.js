@@ -231,30 +231,25 @@ function updateRecordingUI(isRecording) {
 }
 let currentFilename = null;
 document.getElementById('save-transcription-btn').addEventListener('click', function() {
-    const transcriptionText = document.getElementById('transcription-textarea').value;
-    if (!currentFilename) {
-        // Show the filename input if a filename has not been set
-        document.getElementById('filename-input-container').classList.remove('hidden');
-    } else {
-        // Proceed to save the transcription with the current filename
-        saveCurrentTranscription();
-    }
+    document.getElementById('filename-input-container').classList.remove('hidden');
+    
 });
 document.getElementById('save-filename-btn').addEventListener('click', function() {
-    const filenameInput = document.getElementById('filename-input').value;
-    if (!filenameInput.trim()) {
-        alert('Filename is required.');
+    const transcriptionText = document.getElementById('transcription-textarea').value;
+    let filename = document.getElementById('filename-input').value.trim();
+
+    if (!filename) {
+        alert('Filename is required to save the transcription.');
         return;
     }
-    currentFilename = filenameInput.trim() + '.txt'; // Append .txt extension
-    document.getElementById('filename-input-container').classList.add('hidden');
-    saveCurrentTranscription(); // Save the transcription after setting the filename
-});
 
-function saveCurrentTranscription() {
-    const transcriptionText = document.getElementById('transcription-textarea').value;
-    saveTranscription(transcriptionText, currentFilename);
-}
+    // Ensure the filename ends with '.txt'
+    if (!filename.toLowerCase().endsWith('.txt')) {
+        filename += '.txt';
+    }
+
+    saveTranscription(transcriptionText, filename);
+});
 
 function saveTranscription(transcriptionText, filename) {
     fetch('/save-transcription', {
@@ -270,6 +265,7 @@ function saveTranscription(transcriptionText, filename) {
             throw new Error(data.error);
         }
         alert('Transcription saved successfully.');
+        document.getElementById('filename-input-container').classList.add('hidden');
     })
     .catch(error => {
         console.error('Error:', error);

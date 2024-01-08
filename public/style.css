@@ -178,7 +178,7 @@ h1.text-center {
 }
 
 .tablink {
-    background-color: var(--btn-border-color);
+    background-color: #5e676e;;
     color: white;
     float: left;
     border: none;
@@ -187,10 +187,13 @@ h1.text-center {
     font-size: 17px;
     width: 50%;
     margin-bottom: 1rem;
+    filter: brightness(0.4);
+
 }
 
 .tablink:hover, .tablink.active {
     background-color: var(--dark-field-bg);
+    filter: none;
 }
 
 .btn-primary, .btn-secondary, .btn-info {
