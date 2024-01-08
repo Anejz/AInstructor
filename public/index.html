@@ -21,65 +21,113 @@
 
 
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center">AInstruktor</h1>
+    <div>
+        <div class="container col-md-4 col-12">
+            <h1 class="text-center">AInstruktor</h1>
 
-        <!-- Tab Links -->
-        <div class="tab">
-            <button class="tablink" onclick="openTab(event, 'Recording')"><i class="fa-solid fa-microphone-lines"></i></i></i> Recording</button>
-            <button class="tablink" onclick="openTab(event, 'Uploading')"><i class="fa-solid fa-file-arrow-up"></i> Uploading</button>
-            
-        </div>
-        
-        
-        <form id="upload-form">
-            
-            <div id="Recording" class="tabcontent">
-                <button id="startRecording" class="btn btn-secondary"><i class="fa-solid fa-microphone"></i> Start Recording</button>
-                <button id="stopRecording" class="btn btn-secondary" disabled><i class="fa-solid fa-microphone-slash"></i> Stop Recording</button>
-                <audio id="audioPlaybackRecord" controls hidden ></audio>
+            <!-- Tab Links -->
+            <div class="tab">
+                <button class="tablink" onclick="openTab(event, 'Recording')"><i class="fa-solid fa-microphone-lines"></i></i></i> Recording</button>
+                <button class="tablink" onclick="openTab(event, 'Uploading')"><i class="fa-solid fa-file-arrow-up"></i> Uploading</button>
+                
             </div>
             
-            <div id="Uploading" class="tabcontent">
-                <label id="uploadLabel" for="fileUpload" class="form-label">Upload your sound file</label>
-                <input type="file" class="form-control" id="fileUpload" accept="audio/*">
-                <audio id="audioPlaybackUpload" controls hidden ></audio>
+            
+            <form id="upload-form">
+                
+                <div id="Recording" class="tabcontent">
+                    <button id="startRecording" class="btn btn-secondary"><i class="fa-solid fa-microphone"></i> Start Recording</button>
+                    <button id="stopRecording" class="btn btn-secondary" disabled><i class="fa-solid fa-microphone-slash"></i> Stop Recording</button>
+                    <audio id="audioPlaybackRecord" controls hidden ></audio>
+                </div>
+                
+                <div id="Uploading" class="tabcontent">
+                    <label id="uploadLabel" for="fileUpload" class="form-label">Upload your sound file</label>
+                    <input type="file" class="form-control" id="fileUpload" accept="audio/*">
+                    <audio id="audioPlaybackUpload" controls hidden ></audio>
+                </div>
+                <div class="mb-3">
+                    <label for="language">Language:</label>
+                    <select id="language" class="select-language form-control">
+                        <option value="none">No Language Specified</option>
+                        <option value="en">English</option>
+                        <option value="sl">Slovenian</option>
+                    </select>
+                </div>
+                <button id="transcribeButton" type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Transcribe</button>
+                
+                
+            </form>
+            <div class="mb-3">
+                <audio id="audioPlayback" controls hidden></audio>
             </div>
             <div class="mb-3">
-                <label for="language">Language:</label>
-                <select id="language" class="select-language form-control">
-                    <option value="none">No Language Specified</option>
-                    <option value="en">English</option>
-                    <option value="sl">Slovenian</option>
-                </select>
-            </div>
-            <button id="transcribeButton" type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Transcribe</button>
-            
-            
-        </form>
-        <div class="mb-3">
-            <audio id="audioPlayback" controls hidden></audio>
-        </div>
-        <div class="mb-3">
-            <label for="transcription-textarea" class="transcription-related hidden">Transcription:</label>
-            <div id="progress-container" class="d-none">
-                <div class="progress">
-                    <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%; margin: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                <label for="transcription-textarea" class="transcription-related hidden">Transcription:</label>
+                <div id="progress-container" class="d-none">
+                    <div class="progress">
+                        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%; margin: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <textarea id="transcription-textarea" class="form-control transcription-related hidden" rows="10"></textarea>
+                <button id="save-transcription-btn" class="btn btn-success hidden transcription-related">Save Transcription</button>
+                <div id="loading-spinner" class="text-center d-none hidden">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
             </div>
-            <textarea id="transcription-textarea" class="form-control transcription-related hidden" rows="10"></textarea>
-            <div id="loading-spinner" class="text-center d-none hidden">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
+            <button id="reformulate-btn" class="btn btn-primary hidden transcription-related">Reformulate Transcription</button>
+            <button id="generate-questions-btn" class="btn btn-secondary hidden transcription-related">Generate Questions</button>
+            <button id="generate-notes-btn" class="btn btn-info hidden transcription-related">Generate Notes</button>
+            <div id="gpt-response" class="mt-4"></div>
+            <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
         </div>
-        <button id="reformulate-btn" class="btn btn-primary hidden transcription-related">Reformulate Transcription</button>
-        <button id="generate-questions-btn" class="btn btn-secondary hidden transcription-related">Generate Questions</button>
-        <button id="generate-notes-btn" class="btn btn-info hidden transcription-related">Generate Notes</button>
-        <div id="gpt-response" class="mt-4"></div>
-        <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
+        <!-- [Existing HTML code up to the transcription-related elements] -->
+
+    <!-- Chat Interface -->
+        
+
+    <!-- [Rest of the index.html code] -->
+
+        <div class="chat-area col-md-8 d-none d-md-block">
+            <div class="chat-container">
+                <header class="chat-header">
+                  <h1 class="chat-title">AI Chatbot</h1>
+                </header>
+                <main class="chat-main">
+                  <div class="user-message">
+                    <div class="user-avatar">
+                      <span class="avatar-label">U</span>
+                    </div>
+                    <div class="message-bubble-user">
+                      <p>Hello! How can I assist you today?</p>
+                    </div>
+                  </div>
+                  <div class="ai-message">
+                    <div class="ai-avatar">
+                      <span class="avatar-label">AI</span>
+                    </div>
+                    <div class="message-bubble-ai">
+                      <p>I need help with my account.</p>
+                    </div>
+                  </div>
+                </main>
+                <footer class="chat-footer">
+                  <div class="footer-buttons">
+                    <button class="footer-button">Reset Password</button>
+                    <button class="footer-button">Update Email</button>
+                    <button class="footer-button">Change Username</button>
+                  </div>
+                  <div class="message-input-container">
+                    <input type="text" id="user-input" class="message-input" placeholder="Type your message here..." />
+                    <button id="send-button" class="send-button">Send</button>
+                  </div>
+                </footer>
+              </div>
+              
+        </div>
     </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
