@@ -173,15 +173,19 @@ async function fetchAssistantResponse(threadId) {
 // [Existing server.js code]
 // Assuming express and openai are already set up
 app.post('/chat', async (req, res) => {
-    const { message } = req.body;
+    const { message, fileContent } = req.body;
 
     try {
+        const fileContent = filePath ? await fs.readFile(filePath, 'utf8') : '';
+
+        const systemMessage = `You are a helpful assistant. You answer uestions about the following content: ${fileContent}`;
         const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo-1106", // Specify the model here
             messages: [
-                { role: "system", content: "You are a helpful assistant." },
+                { role: "system", content: systemMessage },
                 { role: "user", content: message }
             ],
+            
         });
 
         console.log(completion.choices[0]);
@@ -192,4 +196,14 @@ app.post('/chat', async (req, res) => {
     }
 });
 
+app.get('/get-file-content', async (req, res) => {
+    const { filename } = req.query;
 
+    try {
+        const content = await fs.readFile(`saved_transcriptions/${filename}`, 'utf8');
+        res.json({ content });
+    } catch (error) {
+        console.error('Error reading file:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});

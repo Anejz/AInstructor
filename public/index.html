@@ -42,11 +42,14 @@
                 </div>
                 
                 <div id="Uploading" class="tabcontent">
+                  <div class="upload-area">
                     <label id="uploadLabel" for="fileUpload" class="form-label">Upload your sound file</label>
                     <input type="file" class="form-control" id="fileUpload" accept="audio/*">
                     <audio id="audioPlaybackUpload" controls hidden ></audio>
+                  </div>
+                    
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 language-area">
                     <label for="language">Language:</label>
                     <select id="language" class="select-language form-control">
                         <option value="none">No Language Specified</option>
@@ -70,6 +73,11 @@
                 </div>
                 <textarea id="transcription-textarea" class="form-control transcription-related hidden" rows="10"></textarea>
                 <button id="save-transcription-btn" class="btn btn-success hidden transcription-related">Save Transcription</button>
+                <div id="filename-input-container" class="hidden">
+                  <label for="filename-input">Enter Filename:</label>
+                  <input type="text" id="filename-input" class="form-control">
+                  <button id="save-filename-btn" class="btn btn-primary">Save Filename</button>
+              </div>
                 <div id="loading-spinner" class="text-center d-none hidden">
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">Loading...</span>

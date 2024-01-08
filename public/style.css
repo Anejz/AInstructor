@@ -34,12 +34,13 @@ h1.text-center {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 10px;
+    padding: 0px;
     width: 33.33%;
     float: left;
     height: 100%;
     background-color: var(--dark-field-bg);
 }
+
 
 .chat-area {
     width: 66.66%; /* Remaining area */
@@ -177,7 +178,7 @@ h1.text-center {
 }
 
 .tablink {
-    background-color: #303030;
+    background-color: var(--btn-border-color);
     color: white;
     float: left;
     border: none;
@@ -189,7 +190,7 @@ h1.text-center {
 }
 
 .tablink:hover, .tablink.active {
-    background-color: #3b3b3b;
+    background-color: var(--dark-field-bg);
 }
 
 .btn-primary, .btn-secondary, .btn-info {
@@ -200,6 +201,13 @@ h1.text-center {
 
 .btn-primary:hover, .btn-secondary:hover, .btn-info:hover {
     background-color: var(--primary-color);
+}
+.language-area{
+  margin: 5px 0 5px 5px;
+}
+
+.upload-area{
+  margin: 5px 0 5px 5px;
 }
 
 /* Form fields focused styles */
