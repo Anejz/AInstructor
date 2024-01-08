@@ -81,7 +81,7 @@ app.post('/save-transcription', async (req, res) => {
         return res.status(400).json({ error: 'Missing transcription or filename' });
     }
 
-    const filePath = `saved_transcriptions/${filename}.txt`;
+    const filePath = `saved_transcriptions/${filename}`;
 
     try {
         if (!fs.existsSync('saved_transcriptions')) {
@@ -178,7 +178,7 @@ app.post('/chat', async (req, res) => {
     try {
         const fileContent = filePath ? await fs.readFile(filePath, 'utf8') : '';
 
-        const systemMessage = `You are a helpful assistant. You answer uestions about the following content: ${fileContent}`;
+        const systemMessage = `You are a helpful assistant. You answer questions about the following content: ${fileContent}`;
         const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo-1106", // Specify the model here
             messages: [
