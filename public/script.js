@@ -40,10 +40,22 @@ document.getElementById('transcribeButton').addEventListener('click', function(e
     updateProgressBar(0);
     if (activeTab === 'Recording') {
         // Logic for transcribing the recorded audio
+        
+        document.querySelector('.chat-area').classList.remove('hidden');
+        document.querySelector('.chat-interface').style.display = 'none';
+        document.querySelector('.transcription-results-container').classList.remove('hidden');
+        document.querySelector('.transcription-section').style.width = '30%';
+        document.querySelector('.chat-interface-section').style.width = '70%';
         transcribeRecording();
     } else if (activeTab === 'Uploading') {
         // Logic for transcribing the uploaded file
+        document.querySelector('.chat-area').classList.remove('hidden');
+        document.querySelector('.chat-interface').style.display = 'none';
+        document.querySelector('.transcription-results-container').classList.remove('hidden');
+        document.querySelector('.transcription-section').style.width = '30%';
+        document.querySelector('.chat-interface-section').style.width = '70%';
         transcribeUpload();
+        
     } else {
         console.error('No active tab found');
     }
@@ -70,15 +82,17 @@ function transcribeUpload(){
         }
         updateProgressBar(100);
         document.getElementById('loading-spinner').classList.add('d-none');
-        return response.json();
+        //showChatArea();
+        
         document.getElementById('loading-spinner').classList.add('hidden');
         setTranscriptionVisibility(true);
+        return response.json();
     })
     .then(data => {
         if (data.error) {
             throw new Error(data.error);
         }
-        document.getElementById('transcription-textarea').textContent = data.transcription;
+        document.getElementById('transcription-textarea').value = data.transcription;
         document.getElementById('error-message').classList.add('d-none');
         document.getElementById('loading-spinner').classList.add('hidden');
         setTranscriptionVisibility(true);
@@ -264,8 +278,8 @@ function saveTranscription(transcriptionText, filename) {
         if (data.error) {
             throw new Error(data.error);
         }
-        alert('Transcription saved successfully.');
         document.getElementById('filename-input-container').classList.add('hidden');
+        fetchAndDisplaySavedFiles();
     })
     .catch(error => {
         console.error('Error:', error);
@@ -279,12 +293,19 @@ document.getElementById('transcription-textarea').addEventListener('blur', funct
         saveTranscription(transcriptionText, currentFilename);
     }
 });
+document.getElementById('file-content-area').addEventListener('blur', function() {
+    if (currentFilename) {
+        const transcriptionText = this.value;
+        saveTranscription(transcriptionText, currentFilename);
+    }
+});
 function fetchAndDisplaySavedFiles() {
     fetch('/list-saved-transcriptions')
     .then(response => response.json())
     .then(data => {
         const fileListElement = document.getElementById('saved-files-list');
         fileListElement.innerHTML = ''; // Clear existing list
+        document.querySelector('.file-listing-section').classList.remove('hidden');
         data.files.forEach(file => {
             const fileElement = document.createElement('li');
             fileElement.textContent = file;
@@ -294,67 +315,63 @@ function fetchAndDisplaySavedFiles() {
     })
     .catch(error => console.error('Error fetching saved files:', error));
 }
-
-function openSavedFile(filename) {
-    // Fetch and display the contents of the selected file
-    // [To be implemented]
-}
-document.getElementById('reformulate-btn').addEventListener('click', function() {
-    const transcriptionText = document.getElementById('transcription-textarea').textContent;
-
-    fetch('/reformulate', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ transcription: transcriptionText })
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('gpt-reponse').textContent = data.refinedTranscription;
-    })
-    .catch(error => console.error('Error:', error));
+document.addEventListener('DOMContentLoaded', function() {
+    fetchAndDisplaySavedFiles(); // Fetch and display saved files on page load
 });
+let selectedFileContent = '';
+function openSavedFile(filename) {
+    fetch(`/get-file-content?filename=${encodeURIComponent(filename)}`)
+        .then(response => response.json())
+        .then(data => {
+            const fileContentArea = document.getElementById('file-content-area');
+            if (fileContentArea) {
+                fileContentArea.value = data.content; // Assuming 'content' is the key in the response containing the file text
+                selectedFileContent = data.content;
+                currentFilename = filename;
+                fileContentArea.classList.remove('hidden'); // Make the textarea visible
 
-// [Previous JavaScript]
+                // Optionally, adjust layout if needed
+                document.querySelector('.transcription-section').style.width = '30%';
+                document.querySelector('.chat-interface-section').style.width = '70%';
+                document.querySelector('.chat-area').classList.remove('hidden');
+                document.querySelector('.chat-interface').style.display = 'flex';
+                document.querySelector('.chat-interface-section').classList.remove('hidden');
+                document.querySelector('.transcription-results-container').classList.add('hidden');
+            } else {
+                console.error('File content area element not found');
+            }
+        })
+        .catch(error => console.error('Error fetching file content:', error));
+        updateSelectedFileInList(filename);
+}
+function updateSelectedFileInList(selectedFilename) {
+    const fileListElement = document.getElementById('saved-files-list');
+    Array.from(fileListElement.children).forEach(fileElement => {
+        if (fileElement.textContent === selectedFilename) {
+            fileElement.classList.add('selected-file');
+        } else {
+            fileElement.classList.remove('selected-file');
+        }
+    });
+}
 
-document.getElementById('reformulate-btn').addEventListener('click', function() {
-    processTranscription('reformulate');
+
+document.getElementById('summarize-btn').addEventListener('click', function() {
+    document.getElementById('user-input') = "Summarize the text"
+    document.getElementById('send-button').click();
 });
 
 document.getElementById('generate-questions-btn').addEventListener('click', function() {
-    processTranscription('generate-questions');
+    document.getElementById('user-input').value = "Generate questions from the text"
+    document.getElementById('send-button').click();
 });
 
-document.getElementById('generate-notes-btn').addEventListener('click', function() {
-    processTranscription('generate-notes');
+document.getElementById('explain-btn').addEventListener('click', function() {
+    document.getElementById('user-input').value = "Explain the content to me like I am 5"
+    document.getElementById('send-button').click();
+
 });
 
-function processTranscription(action) {
-    const transcriptionText = document.getElementById('transcription-textarea').value;
-    const requestBody = { action: action, transcription: transcriptionText };
-
-    fetch('/process-transcript', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            throw new Error(data.error);
-        }
-        document.getElementById('gpt-response').textContent = data.gptResponse;
-        document.getElementById('error-message').classList.add('d-none');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('error-message').textContent = error.message;
-        document.getElementById('error-message').classList.remove('d-none');
-    });
-}
 
 // [Rest of the JavaScript]
 
@@ -362,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.tablink').click(); // Open the first tab
     setTranscriptionVisibility(false); // Hide transcription-related elements on page load
 });
-let selectedFileContent = '';
+
 document.getElementById('send-button').addEventListener('click', function() {
     const userInput = document.getElementById('user-input').value;
     if (!userInput.trim()) return; // Avoid sending empty messages
@@ -378,7 +395,8 @@ document.getElementById('send-button').addEventListener('click', function() {
     fetch('/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userInput })
+        body: JSON.stringify({ message: userInput ,
+        fileContent: document.getElementById('file-content-area').value})
     })
     .then(response => response.json())
     .then(data => {
@@ -425,3 +443,39 @@ function addMessage(sender, message, messageClass, bubbleClass) {
     // Scroll to the latest message
     chatMain.scrollTop = chatMain.scrollHeight;
 }
+
+function toggleChatInterface(showChat) {
+    const mainContainer = document.querySelector('.main-container');
+    const chatSection = document.querySelector('.chat-interface-section');
+
+    if (showChat) {
+        mainContainer.classList.add('chat-interface-visible');
+        chatSection.classList.remove('hidden');
+    } else {
+        mainContainer.classList.remove('chat-interface-visible');
+        chatSection.classList.add('hidden');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('file-content-area');
+    const resizeHandle = document.getElementById('resize-handle');
+
+    let startY, startHeight;
+
+    resizeHandle.addEventListener('mousedown', function(e) {
+        startY = e.clientY;
+        startHeight = parseInt(document.defaultView.getComputedStyle(textarea).height, 10);
+        document.documentElement.addEventListener('mousemove', doDrag, false);
+        document.documentElement.addEventListener('mouseup', stopDrag, false);
+    });
+
+    function doDrag(e) {
+        textarea.style.height = (startHeight + e.clientY - startY) + 'px';
+    }
+
+    function stopDrag() {
+        document.documentElement.removeEventListener('mousemove', doDrag, false);
+        document.documentElement.removeEventListener('mouseup', stopDrag, false);
+    }
+});

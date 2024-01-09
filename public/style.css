@@ -10,7 +10,7 @@
 }
 
 body {
-    background-color: var(--dark-field-bg);
+    background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Open Sans', sans-serif;
     line-height: 1.6;
@@ -47,6 +47,7 @@ h1.text-center {
     float: right; /* Align to the right side */
     /* Additional styling as required */
 }
+
 
 .chat-container {
     width: 100%;
@@ -166,7 +167,48 @@ h1.text-center {
   .chat-main::-webkit-scrollbar-track {
     background-color: var(--dark-field-bg);
   }
-  
+  .main-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.transcription-section {
+    width: 100%; /* Full width initially */
+    transition: width 0.5s; /* Smooth transition for resizing */
+    height: 100vh;
+    background-color: var(--dark-field-bg);
+}
+
+.chat-interface-section {
+    width: 0; /* Hidden initially */
+    transition: width 0.5s; /* Smooth transition for resizing */
+    padding-left: 10px;
+}
+.chat-interface-visible .transcription-section {
+  width: 33.33%;
+}
+
+.chat-interface-visible .chat-interface-section {
+  width: 66.66%;
+  display: block; /* Show the chat interface */
+}
+.chat-interface-visible .transcription-section {
+  width: 33.33%;
+}
+
+.chat-interface-visible .chat-interface-section {
+  width: 66.66%;
+  display: block; /* Show the chat interface */
+}
+.chat-interface {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Set minimum height to full viewport height */
+}
+.chat-main {
+  flex: 1; /* This will allow chat-main to grow and fill available space */
+}
 
 /* Tab and Button Styles */
 .tabcontent, .btn, .form-control, .select-language, select, option {
@@ -178,7 +220,7 @@ h1.text-center {
 }
 
 .tablink {
-    background-color: #5e676e;;
+    background-color: #727d86;;
     color: white;
     float: left;
     border: none;
@@ -280,4 +322,45 @@ audio {
     display: block;
 }
 
+.file-listing-section {
+    margin-top: 1rem;
+    border-top: var(--btn-border-color) 1px solid;
+    margin-left: 10px;
+}
+#saved-files-list {
+  list-style-type: none; /* Removes the default list bullet points */
+  padding: 0;
+}
 
+#saved-files-list li {
+  cursor: pointer; /* Changes cursor to a pointer on hover */
+  background-color: var(--dark-field-bg); /* Adjust background color */
+  color: var(--text-color); /* Adjust text color */
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: var(--border-radius); /* Adjust as per your UI's border-radius */
+  border: 1px solid var(--btn-border-color); /* Border color */
+}
+
+#saved-files-list li:hover {
+  background-color: var(--primary-color); /* Color change on hover */
+  color: white; /* Text color on hover */
+}
+
+.selected-file{
+  border: 1px solid var(--primary-color) !important; /* Blue border for selected file */
+  background-color: var(--bg-color) !important;
+}
+
+#resize-handle {
+  height: 1px;
+  cursor: ns-resize; /* Light gray color, adjust as needed */
+  padding-bottom: 5px;  
+  
+}
+#resize-handle:hover {
+  background-color: var(--btn-border-color); /* Slightly darker gray color, adjust as needed */
+}
+#file-content-area{
+  margin-bottom: 0;
+}

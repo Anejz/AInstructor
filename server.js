@@ -4,7 +4,7 @@ const cors = require('cors');
 const fs = require('fs');
 const { OpenAI } = require('openai');
 const dotenv = require('dotenv');
-
+const path = require('path');
 
 
 dotenv.config();
@@ -113,72 +113,17 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
-app.post('/process-transcript', async (req, res) => {
-    const { action, transcription } = req.body;
-    try {
-        let response;
-        switch (action) {
-            case 'reformulate':
-                response = await openai.chat.completions.create({
-                    messages: [{ role: "system", content: "You are a lector. Restructure this text. Fix any grammar errors and formulate the text" },
-                               { role: "user", content: transcription }],
-                    model: "gpt-3.5-turbo-1106",
-                });
-                break;
-            case 'generate-questions':
-                response = await openai.chat.completions.create({
-                    messages: [{ role: "system", content: "You are a tutor. Generate study questions based on the following text." },
-                               { role: "user", content: transcription }],
-                    model: "gpt-3.5-turbo-1106",
-                });
-                break;
-            case 'generate-notes':
-                response = await openai.chat.completions.create({
-                    messages: [{ role: "system", content: "You are a note-taker. Summarize the following text into key points and concepts. Write with breaks and bulletpoints. Always write <br> before -" },
-                               { role: "user", content: transcription }],
-                    model: "gpt-3.5-turbo-1106",
-                });
-                break;
-            default:
-                throw new Error('Invalid action');
-        }
 
-        const gptResponse = response?.choices[0].message.content || 'No response from GPT';
-        res.json({ gptResponse });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send('Error processing request');
-    }
-});
-async function fetchAssistantResponse(threadId) {
-    let attempts = 0;
-    const maxAttempts = 10; // Maximum number of polling attempts
-    const interval = 5000; // Interval between attempts in milliseconds
 
-    while (attempts < maxAttempts) {
-        const messagesResponse = await openai.beta.threads.messages.list(threadId);
-        const assistantMessages = messagesResponse.data.filter(msg => msg.role === 'assistant');
-
-        if (assistantMessages.length > 0) {
-            // Return the latest assistant message
-            return assistantMessages[assistantMessages.length - 1];
-        }
-
-        await new Promise(resolve => setTimeout(resolve, interval));
-        attempts++;
-    }
-
-    throw new Error('No response from the assistant after maximum attempts');
-}
 // [Existing server.js code]
 // Assuming express and openai are already set up
 app.post('/chat', async (req, res) => {
+    console.log('Request body:', req.body);
     const { message, fileContent } = req.body;
-
+    console.log(`You are a helpful assistant. You answer questions about the following content of a file: ${fileContent}`)
     try {
-        const fileContent = filePath ? await fs.readFile(filePath, 'utf8') : '';
 
-        const systemMessage = `You are a helpful assistant. You answer questions about the following content: ${fileContent}`;
+        const systemMessage = `You are a helpful assistant. You answer questions about the following content of a file: ${fileContent}`;
         const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo-1106", // Specify the model here
             messages: [
@@ -196,14 +141,26 @@ app.post('/chat', async (req, res) => {
     }
 });
 
-app.get('/get-file-content', async (req, res) => {
-    const { filename } = req.query;
+const SAVED_FILES_DIR = 'saved_transcriptions';
 
-    try {
-        const content = await fs.readFile(`saved_transcriptions/${filename}`, 'utf8');
-        res.json({ content });
-    } catch (error) {
-        console.error('Error reading file:', error);
-        res.status(500).send('Internal Server Error');
+app.get('/get-file-content', (req, res) => {
+    const filename = req.query.filename;
+
+    // Construct the full file path
+    const filePath = path.join(SAVED_FILES_DIR, filename);
+
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: 'File not found' });
     }
+
+    // Read the file content
+    fs.readFile(filePath, 'utf8', (err, content) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            return res.status(500).json({ error: 'Error reading file' });
+        }
+
+        res.json({ content });
+    });
 });
