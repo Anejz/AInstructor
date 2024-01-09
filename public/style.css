@@ -22,13 +22,16 @@ body {
 /* Title with Background Image */
 h1.text-center {
     background-image: url('img/banner.png'); /* Replace with your image URL or path */
-    background-size: cover;
+    background-color: var(--bg-color);
+    background-size:contain;
     color: white; /* Adjust text color for visibility */
     margin: 0;
     padding: 60px 0;
-    background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
+    border-bottom: var(--btn-border-color) 1px solid;
+
+
 }
 
 .container {
@@ -230,6 +233,7 @@ h1.text-center {
     width: 50%;
     margin-bottom: 1rem;
     filter: brightness(0.4);
+    border-bottom: var(--primary-color) 1px solid; 
 
 }
 
@@ -363,4 +367,122 @@ audio {
 }
 #file-content-area{
   margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .container, .chat-area {
+      width: 100%;
+      float: none;
+      height: 100vh; /* Full viewport height */
+  }
+
+  .container {
+      order: 1; /* Transcription section on top */
+  }
+
+  .chat-area {
+      order: 2; /* Chat interface below transcription section */
+  }
+
+  .main-container {
+      display: flex;
+      flex-direction: column;
+  }
+  .transcription-section{
+    height: 100%;
+    width: 100% !important;
+  }
+  .chat-interface-section{
+    width: 100% !important;
+  }
+
+  
+
+.chat-interface.expanded {
+    transform: translateY(0); /* Expand to full view */
+}
+
+.chat-header {
+    cursor: pointer; /* Indicate the header is draggable */
+    position: relative;
+    margin-bottom: 25px;
+}
+.chat-interface {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100vh; /* Full screen height */
+  transform: translateY(calc(100vh - 60px)); /* Adjust 60px to your header's height */
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000; /* Ensure it's above other content */
+  background-color: var(--bg-color); /* Background color */
+}
+.chat-header .fa {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+#swipe-up-icon {
+  display: block; /* Hidden initially */
+  bottom: calc(100% + 20px); /* Just above the header */
+}
+
+#swipe-down-icon {
+  display: none; /* Visible when chat is closed */
+  top: 100%; /* Just below the header */
+}
+
+.chat-interface.expanded #swipe-up-icon, .chat-interface.expanded #swipe-up-text {
+  display: none; /* Show when chat is expanded */
+}
+
+.chat-interface.expanded #swipe-down-icon {
+  display: block; /* Hide when chat is expanded */
+}
+#swipe-up-text {
+  display: block; /* Hidden initially */
+  position: absolute;
+  bottom: 100%; /* Position below the icon, adjust as needed */
+  right: 10px; /* Align with the icon */
+  color: var(--text-color); /* Set the text color */
+  font-size: 14px; /* Adjust the font size as needed */
+  z-index: 1001;
+  width: 120px;
+}
+.chat-header .fa, .chat-header #swipe-up-text {
+  position: absolute;
+  left: 50%; /* Centered horizontally */
+  transform: translateX(-50%); /* Adjust position to truly center */
+  cursor: pointer;
+}
+.swipe-indicator {
+  display: flex; /* Enable flexbox */
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center items vertically */
+  position: absolute;
+  width: 80px;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%); /* Adjust for exact horizontal centering */
+  z-index: 1001;
+}
+.swipe-down-indicator {
+  display: none; /* Hidden initially */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  top: 0px; /* Adjust this value to match your chat header's height */
+  transform: translateX(-50%);
+  z-index: 1001; /* Make sure it's above the chat content */
+}
+.chat-interface.expanded .swipe-down-indicator {
+  display: flex; /* Show when chat is expanded */
+}
 }

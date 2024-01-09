@@ -120,7 +120,7 @@ app.listen(PORT, () => {
 app.post('/chat', async (req, res) => {
     console.log('Request body:', req.body);
     const { message, fileContent } = req.body;
-    console.log(`You are a helpful assistant. You answer questions about the following content of a file: ${fileContent}`)
+    console.log(`You are a helpful assistant. You answer questions about the following content of a file in english or Slovenian, depending on the language of the file and questions: ${fileContent}`)
     try {
 
         const systemMessage = `You are a helpful assistant. You answer questions about the following content of a file: ${fileContent}`;
