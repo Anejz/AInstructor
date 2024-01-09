@@ -286,7 +286,12 @@ function saveTranscription(transcriptionText, filename) {
         alert('Error saving transcription.');
     });
 }
-
+document.getElementById('filename-input').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent the default form submission behavior
+        document.getElementById('save-filename-btn').click(); // Trigger click on the send button
+    }
+});
 document.getElementById('transcription-textarea').addEventListener('blur', function() {
     if (currentFilename) {
         const transcriptionText = this.value;
@@ -357,7 +362,7 @@ function updateSelectedFileInList(selectedFilename) {
 
 
 document.getElementById('summarize-btn').addEventListener('click', function() {
-    document.getElementById('user-input') = "Summarize the text"
+    document.getElementById('user-input').value = "Summarize the text"
     document.getElementById('send-button').click();
 });
 
