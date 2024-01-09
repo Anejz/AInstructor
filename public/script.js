@@ -318,6 +318,7 @@ function fetchAndDisplaySavedFiles() {
             fileListElement.appendChild(fileElement);
         });
     })
+
     .catch(error => console.error('Error fetching saved files:', error));
 }
 document.addEventListener('DOMContentLoaded', function() {
