@@ -38,30 +38,38 @@ document.getElementById('transcribeButton').addEventListener('click', function(e
     document.getElementById('loading-spinner').classList.remove('d-none');
     document.getElementById('progress-container').classList.remove('d-none');
     updateProgressBar(0);
+
+    // Show the chat area and hide the chat interface
+    document.querySelector('.chat-area').classList.remove('hidden');
+    document.querySelector('.chat-interface').style.display = 'none';
+    document.querySelector('.transcription-results-container').classList.remove('hidden');
+
+    // Adjust layout based on screen size
+    adjustLayoutForScreenSize();
+
     if (activeTab === 'Recording') {
-        // Logic for transcribing the recorded audio
-        
-        document.querySelector('.chat-area').classList.remove('hidden');
-        document.querySelector('.chat-interface').style.display = 'none';
-        document.querySelector('.transcription-results-container').classList.remove('hidden');
-        document.querySelector('.transcription-section').style.width = '30%';
-        document.querySelector('.chat-interface-section').style.width = '70%';
         transcribeRecording();
     } else if (activeTab === 'Uploading') {
-        // Logic for transcribing the uploaded file
-        document.querySelector('.chat-area').classList.remove('hidden');
-        document.querySelector('.chat-interface').style.display = 'none';
-        document.querySelector('.transcription-results-container').classList.remove('hidden');
-        document.querySelector('.transcription-section').style.width = '30%';
-        document.querySelector('.chat-interface-section').style.width = '70%';
         transcribeUpload();
-        
     } else {
         console.error('No active tab found');
     }
-
-    
 });
+
+function adjustLayoutForScreenSize() {
+    const transcriptionSection = document.querySelector('.transcription-section');
+    const chatInterfaceSection = document.querySelector('.chat-interface-section');
+
+    if (window.innerWidth <= 768) {
+        // For mobile devices
+        transcriptionSection.style.width = '100%';
+        chatInterfaceSection.style.width = '100%';
+    } else {
+        // For larger screens
+        transcriptionSection.style.width = '30%';
+        chatInterfaceSection.style.width = '70%';
+    }
+}
 function transcribeUpload(){
     const formData = new FormData();
     formData.append('file', document.getElementById('fileUpload').files[0]);
@@ -341,6 +349,8 @@ function openSavedFile(filename) {
                 document.querySelector('.chat-interface-section').style.width = '70%';
                 document.querySelector('.chat-area').classList.remove('hidden');
                 document.querySelector('.chat-interface').style.display = 'flex';
+                document.querySelector('.chat-interface').classList.remove('hidden');
+                document.querySelector('.chat-interface').classList.remove('expanded');
                 document.querySelector('.chat-interface-section').classList.remove('hidden');
                 document.querySelector('.transcription-results-container').classList.add('hidden');
             } else {
@@ -484,4 +494,22 @@ document.addEventListener('DOMContentLoaded', function() {
         document.documentElement.removeEventListener('mousemove', doDrag, false);
         document.documentElement.removeEventListener('mouseup', stopDrag, false);
     }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    var chatInterface = document.getElementById('chat-interface');
+    var hammerInstance = new Hammer(chatInterface);
+
+    hammerInstance.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
+
+    hammerInstance.on('swipeup', function() {
+        chatInterface.classList.add('expanded');
+        document.querySelector('.swipe-indicator').classList.add('hidden');
+        document.querySelector('.swipe-down-indicator').classList.remove('hidden');
+    });
+
+    hammerInstance.on('swipedown', function() {
+        chatInterface.classList.remove('expanded');
+        document.querySelector('.swipe-indicator').classList.remove('hidden');
+        document.querySelector('.swipe-down-indicator').classList.add('hidden');
+    });
 });

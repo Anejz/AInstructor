@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/24c0342b05.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
 </head>
 
 
@@ -18,7 +19,7 @@
   <div class="main-container">
       <!-- Transcription Section -->
       <div class="container col-md-4 col-12 transcription-section">
-          <h1 class="text-center">AInstruktor</h1>
+          <h1 class="text-center"></h1>
           
           <!-- Tab Links -->
           <div class="tab">
@@ -47,7 +48,7 @@
             <div class="mb-3 language-area">
                 <label for="language">Language:</label>
                 <select id="language" class="select-language form-control">
-                    <option value="none">No Language Specified</option>
+                    <option value="none">Automatically detect</option>
                     <option value="en">English</option>
                     <option value="sl">Slovenian</option>
                 </select>
@@ -98,10 +99,20 @@
             </div>
     
             <!-- Chat Interface -->
-            <div class="chat-interface hidden">
-                <header class="chat-header">
+            <div id="chat-interface" class="chat-interface hidden">
+                <div class="chat-header">
+                    
                     <h1 class="chat-title">AI Chatbot</h1>
-                </header>
+                    <div class="swipe-indicator hidden">
+                        <i id="swipe-up-icon" class="fa fa-chevron-up"></i>
+                        <span id="swipe-up-text">Swipe up to chat</span>
+                    </div>
+                    
+                </div>
+                <div class="swipe-down-indicator hidden">
+                        <span id="swipe-down-text">Swipe down to close</span>
+                        <i id="swipe-down-icon" class="fa fa-chevron-down"></i>
+                </div>
                 <textarea id="file-content-area" class="form-control hidden" rows="10"></textarea>
                 <div id="resize-handle"></div>
                 <main class="chat-main">
