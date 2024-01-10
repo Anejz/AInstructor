@@ -22,9 +22,14 @@
           <h1 class="text-center"></h1>
           
           <!-- Tab Links -->
+          <div class="tip-text text-center">
+            <i class="fas fa-info-circle"></i>
+            Currently, the maximum audio length is limited to 15 min.
+        </div>
           <div class="tab">
-            <button class="tablink" onclick="openTab(event, 'Recording')"><i class="fa-solid fa-microphone-lines"></i></i></i> Recording</button>
-            <button class="tablink" onclick="openTab(event, 'Uploading')"><i class="fa-solid fa-file-arrow-up"></i> Uploading</button>
+            <button class="tablink" onclick="openTab(event, 'Uploading')"><i class="fa-solid fa-file-arrow-up"></i> Upload</button>
+            <button class="tablink" onclick="openTab(event, 'Recording')"><i class="fa-solid fa-microphone-lines"></i> Record</button>
+            
             
         </div>
         
@@ -43,8 +48,13 @@
                 <input type="file" class="form-control" id="fileUpload" accept="audio/*">
                 <audio id="audioPlaybackUpload" controls hidden ></audio>
               </div>
-                
+                <div class="example-audios">
+                <button id="audio1" class="btn btn-info">Example 1</button>
+                <button id="audio2" class="btn btn-info">Example 2</button>
+                <button id="audio3" class="btn btn-info">Example 3</button>
             </div>
+            </div>
+            
             <div class="mb-3 language-area">
                 <label for="language">Language:</label>
                 <select id="language" class="select-language form-control">
@@ -87,6 +97,10 @@
                             <label for="filename-input">Enter Filename:</label>
                             <input type="text" id="filename-input" class="form-control">
                             <button id="save-filename-btn" class="btn btn-primary">Save Filename</button>
+                            
+                        </div>
+                        <div id="open-files-message" class="text-center hidden">
+                            You can now open your saved files from the menu on the left side.
                         </div>
                         <div id="loading-spinner" class="text-center d-none hidden">
                             <div class="spinner-border" role="status">

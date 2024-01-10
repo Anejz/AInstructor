@@ -29,9 +29,12 @@ function setTranscriptionVisibility(show) {
 
 // Set default active tab on page load
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('.tablink').click(); // Open the first tab
+    document.querySelector('.tablink')[1].click(); // Open the first tab
+    document.getElementById('fileUpload').files[0] = null;
 });
 // script.js
+let selectedExample = null;
+
 document.getElementById('transcribeButton').addEventListener('click', function(e) {
     e.preventDefault();
     const activeTab = getActiveTab();
@@ -46,14 +49,19 @@ document.getElementById('transcribeButton').addEventListener('click', function(e
 
     // Adjust layout based on screen size
     adjustLayoutForScreenSize();
-
-    if (activeTab === 'Recording') {
-        transcribeRecording();
-    } else if (activeTab === 'Uploading') {
-        transcribeUpload();
-    } else {
-        console.error('No active tab found');
+    if(selectedExample) {
+        transcribeExampleAudio(selectedExample);
+        selectedExample = null;
+    } else{
+        if (activeTab === 'Recording') {
+            transcribeRecording();
+        } else if (activeTab === 'Uploading') {
+            transcribeUpload();
+        } else {
+            console.error('No active tab found');
+        }
     }
+    
 });
 
 function adjustLayoutForScreenSize() {
@@ -118,9 +126,9 @@ function transcribeUpload(){
 function transcribeRecording() {
     // Check if there are recorded audio chunks
     if (audioChunks.length > 0) {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const audioBlob = new Blob(audioChunks, { type: 'audio/mp4' });
         const formData = new FormData();
-        formData.append('file', audioBlob, 'recording.webm');
+        formData.append('file', audioBlob, 'recording.mp4');
 
         document.getElementById('loading-spinner').classList.remove('hidden');
         setTranscriptionVisibility(false);
@@ -145,6 +153,93 @@ function transcribeRecording() {
         console.error('No audio chunks available for transcription.');
     }
 }
+
+document.getElementById('audio1').addEventListener('click', function(event) {
+    event.preventDefault();
+    selectedExample = '../uploads/audio1.mp3';
+    loadAndTranscribeExampleAudio('../uploads/audio1.mp3'); // Replace with actual path
+});
+document.getElementById('audio2').addEventListener('click', function(event) {
+    event.preventDefault();
+    selectedExample = '../uploads/audio2.mp3';
+    loadAndTranscribeExampleAudio('../uploads/audio2.mp3'); // Replace with actual path
+});
+document.getElementById('audio3').addEventListener('click', function(event) {
+    event.preventDefault();
+    selectedExample = '../uploads/audio3.mp3';
+    loadAndTranscribeExampleAudio('../uploads/audio3.mp3'); // Replace with actual path
+});
+
+function loadAndTranscribeExampleAudio(audioPath) {
+    const audioPlayer = document.getElementById('audioPlaybackUpload');
+    audioPlayer.src = audioPath;
+    audioPlayer.hidden = false;
+    audioPlayer.load(); // Load the new audio source
+
+    // Update UI to show transcription is in progress
+    document.getElementById('loading-spinner').classList.remove('hidden');
+    setTranscriptionVisibility(false);
+    
+    // Call the transcription function for the example audio
+    
+}
+function transcribeExampleAudio(audioPath) {
+    fetch(audioPath)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to fetch the audio file');
+        }
+        return response.blob();
+    })
+    .then(audioBlob => {
+        const formData = new FormData();
+        formData.append('file', new File([audioBlob], 'exampleAudio.mp3', { type: 'audio/mp3' }));
+
+        const language = document.getElementById('language').value;
+        if (language) {
+            formData.append('language', language);
+        }
+
+        return fetch('/transcribe', {
+            method: 'POST',
+            body: formData
+        });
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        console.log('Transcription:', data.transcription); // Debug log
+
+        // Display the transcription result
+        const textarea = document.getElementById('transcription-textarea');
+        textarea.value = data.transcription; // Or use 'value' instead of 'textContent'
+        textarea.classList.remove('hidden');
+
+        // Ensure error message is hidden
+        document.getElementById('error-message').classList.add('d-none');
+        document.getElementById('loading-spinner').classList.add('hidden');
+
+        // Ensure the transcription section is visible
+        setTranscriptionVisibility(true);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('error-message').textContent = error.message;
+        document.getElementById('error-message').classList.remove('d-none');
+        document.getElementById('loading-spinner').classList.add('hidden');
+        setTranscriptionVisibility(true);
+    });
+}
+
+
 
 function updateProgressBar(percent) {
     const progressBar = document.getElementById('progress-bar');
@@ -179,7 +274,7 @@ function initMediaRecorder(stream) {
         }
     });
     function setRecordingAsFile(audioBlob, filename) {
-        const audioFile = new File([audioBlob], filename, { type: 'audio/webm' });
+        const audioFile = new File([audioBlob], filename, { type: 'audio/mp4' });
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(audioFile);
         document.getElementById('fileInput').files = dataTransfer.files;
@@ -188,14 +283,14 @@ function initMediaRecorder(stream) {
     mediaRecorder.addEventListener('stop', async () => {
         try {
             if (audioChunks.length > 0) {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioBlob = new Blob(audioChunks, { type: 'audio/mp4' });
                 const audioUrl = URL.createObjectURL(audioBlob);
                 console.log('Recording stopped, audio available at:', audioUrl);
                 const audioElement = document.getElementById('audioPlaybackRecord');
                 const uploadLabel = document.getElementById('uploadLabel');
                 audioElement.src = audioUrl;
                 audioElement.hidden = false;
-                setRecordingAsFile(audioBlob, "recording.webm");
+                setRecordingAsFile(audioBlob, "recording.mp4");
                 audioElement.load(); // Ensure the audio element loads the new blob URL
                 audioElement.play(); // Optional: Attempt to play the audio immediately
             } else {
@@ -271,6 +366,8 @@ document.getElementById('save-filename-btn').addEventListener('click', function(
     }
 
     saveTranscription(transcriptionText, filename);
+    document.getElementById('open-files-message').classList.remove('hidden');
+    
 });
 
 function saveTranscription(transcriptionText, filename) {
@@ -513,3 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.swipe-down-indicator').classList.add('hidden');
     });
 });
+
+//lahko tudi klikneš ne samo svajpaš
+//Jakatu ne dela player
+//
