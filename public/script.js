@@ -49,17 +49,15 @@ document.getElementById('transcribeButton').addEventListener('click', function(e
 
     // Adjust layout based on screen size
     adjustLayoutForScreenSize();
-    if(selectedExample) {
+    if (activeTab === 'Recording') {
+        transcribeRecording();
+    } else if (selectedExample) {
         transcribeExampleAudio(selectedExample);
         selectedExample = null;
-    } else{
-        if (activeTab === 'Recording') {
-            transcribeRecording();
-        } else if (activeTab === 'Uploading') {
-            transcribeUpload();
-        } else {
-            console.error('No active tab found');
-        }
+    } else if (activeTab === 'Uploading') {
+        transcribeUpload();
+    } else {
+        console.error('No active tab or example selected');
     }
     
 });
@@ -611,6 +609,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-//lahko tudi klikneš ne samo svajpaš
-//Jakatu ne dela player
-//
+
