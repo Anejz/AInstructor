@@ -124,9 +124,9 @@ function transcribeUpload(){
 function transcribeRecording() {
     // Check if there are recorded audio chunks
     if (audioChunks.length > 0) {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/mp4' });
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         const formData = new FormData();
-        formData.append('file', audioBlob, 'recording.mp4');
+        formData.append('file', audioBlob, 'recording.wav');
 
         document.getElementById('loading-spinner').classList.remove('hidden');
         setTranscriptionVisibility(false);
@@ -142,7 +142,7 @@ function transcribeRecording() {
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('transcription-textarea').textContent = data.transcription;
+            document.getElementById('transcription-textarea').value = data.transcription;
             document.getElementById('loading-spinner').classList.add('hidden');
             setTranscriptionVisibility(true);
         })
@@ -214,7 +214,6 @@ function transcribeExampleAudio(audioPath) {
             throw new Error(data.error);
         }
 
-        console.log('Transcription:', data.transcription); // Debug log
 
         // Display the transcription result
         const textarea = document.getElementById('transcription-textarea');
@@ -272,7 +271,7 @@ function initMediaRecorder(stream) {
         }
     });
     function setRecordingAsFile(audioBlob, filename) {
-        const audioFile = new File([audioBlob], filename, { type: 'audio/mp4' });
+        const audioFile = new File([audioBlob], filename, { type: 'audio/wav' });
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(audioFile);
         document.getElementById('fileInput').files = dataTransfer.files;
@@ -281,14 +280,14 @@ function initMediaRecorder(stream) {
     mediaRecorder.addEventListener('stop', async () => {
         try {
             if (audioChunks.length > 0) {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/mp4' });
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
                 const audioUrl = URL.createObjectURL(audioBlob);
                 console.log('Recording stopped, audio available at:', audioUrl);
                 const audioElement = document.getElementById('audioPlaybackRecord');
                 const uploadLabel = document.getElementById('uploadLabel');
                 audioElement.src = audioUrl;
                 audioElement.hidden = false;
-                setRecordingAsFile(audioBlob, "recording.mp4");
+                setRecordingAsFile(audioBlob, "recording.wav");
                 audioElement.load(); // Ensure the audio element loads the new blob URL
                 audioElement.play(); // Optional: Attempt to play the audio immediately
             } else {
