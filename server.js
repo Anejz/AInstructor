@@ -15,6 +15,7 @@ app.get('/favicon.ico', (req, res) => res.status(204)); // Send a No Content res
 
 app.use(cors());
 app.use(express.static('public'));
+app.use('/uploads', express.static('uploads'));
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });

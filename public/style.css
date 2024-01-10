@@ -33,7 +33,17 @@ h1.text-center {
 
 
 }
+.tip-text {
+  color: var(--text-color);
+  margin-top: 10px; /* Adjust space between the title and the tip */
+  padding-bottom: 10px; /* Adjust space between the tip and the next element */
+  font-size: 1rem; /* Adjust font size as needed */
+  border-bottom: var(--btn-border-color) 1px solid;
+}
 
+.tip-text .fa-info-circle {
+  margin-right: 5px; /* Space between icon and text */
+}
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -223,7 +233,7 @@ h1.text-center {
 }
 
 .tablink {
-    background-color: #727d86;;
+    background-color: var(--btn-border-color);
     color: white;
     float: left;
     border: none;
@@ -232,14 +242,16 @@ h1.text-center {
     font-size: 17px;
     width: 50%;
     margin-bottom: 1rem;
-    filter: brightness(0.4);
-    border-bottom: var(--primary-color) 1px solid; 
+    filter: brightness(0.8);
+    border-bottom: var(--btn-border-color) 1px solid; 
+    
 
 }
 
 .tablink:hover, .tablink.active {
     background-color: var(--dark-field-bg);
     filter: none;
+    border-bottom: var(--primary-color) 1px solid; 
 }
 
 .btn-primary, .btn-secondary, .btn-info {
@@ -273,7 +285,14 @@ audio {
     background-color: var(--dark-field-bg);
 }
 
+.example-audios {
+  margin-bottom: 1rem;
+}
 
+.example-audios .btn {
+  margin-right: 5px;
+  border-color: var(--btn-border-color)
+}
 
 /* Progress bar */
 .progress {
