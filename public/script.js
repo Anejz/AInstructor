@@ -146,15 +146,7 @@ async function transcribeRecording() {
         document.getElementById('loading-spinner').classList.remove('hidden');
         setTranscriptionVisibility(false);
 
-        try {
-            const mp3Blob = await convertWavToMp3(audioBlob);
-            const formData = new FormData();
-            formData.append('file', mp3Blob, 'recording.mp3');
-            // Rest of your code remains the same...
-        } catch (error) {
-            console.error('Error converting to MP3:', error);
-            // Handle conversion error
-        }
+        
         const language = document.getElementById('language').value;
         if (language) {
             formData.append('language', language);
