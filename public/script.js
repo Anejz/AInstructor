@@ -346,12 +346,22 @@ document.getElementById('startRecording').addEventListener('click', () => {
 document.getElementById('stopRecording').addEventListener('click', () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
+        stopMediaStream(mediaRecorder.stream); 
         document.getElementById('stopRecording').disabled = true;
         updateRecordingUI(false);
     } else {
         console.error('MediaRecorder is not recording.');
     }
 });
+function stopMediaStream(stream) {
+    if (!stream) {
+        console.warn('No stream available to stop.');
+        return;
+    }
+
+    stream.getTracks().forEach(track => track.stop());
+}
+
 function updateRecordingUI(isRecording) {
     const startBtn = document.getElementById('startRecording');
     const stopBtn = document.getElementById('stopRecording');
