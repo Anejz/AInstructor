@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/24c0342b05.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
+
 </head>
 
 
@@ -40,6 +42,7 @@
                 <button id="startRecording" class="btn btn-secondary"><i class="fa-solid fa-microphone"></i> Start Recording</button>
                 <button id="stopRecording" class="btn btn-secondary" disabled><i class="fa-solid fa-microphone-slash"></i> Stop Recording</button>
                 <audio id="audioPlaybackRecord" controls hidden ></audio>
+                <input type="file" id="fileInput" style="display: none;">
             </div>
             
             <div id="Uploading" class="tabcontent">

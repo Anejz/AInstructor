@@ -29,7 +29,7 @@ function setTranscriptionVisibility(show) {
 
 // Set default active tab on page load
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('.tablink')[1].click(); // Open the first tab
+    document.querySelector('.tablink').click(); // Open the first tab
     document.getElementById('fileUpload').files[0] = null;
 });
 // script.js
@@ -121,7 +121,22 @@ function transcribeUpload(){
         setTranscriptionVisibility(true);
     });
 }
-function transcribeRecording() {
+async function convertWavToMp3(wavBlob) {
+    const { createFFmpeg, fetchFile } = FFmpeg;
+    const ffmpeg = createFFmpeg({ log: true });
+    await ffmpeg.load();
+
+    ffmpeg.FS('writeFile', 'recording.wav', await fetchFile(wavBlob));
+    await ffmpeg.run('-i', 'recording.wav', '-b:a', '192k', 'recording.mp3');
+
+    const mp3Data = ffmpeg.FS('readFile', 'recording.mp3');
+    const mp3Blob = new Blob([mp3Data.buffer], { type: 'audio/mpeg' });
+    return mp3Blob;
+}
+
+
+
+async function transcribeRecording() {
     // Check if there are recorded audio chunks
     if (audioChunks.length > 0) {
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
@@ -131,6 +146,15 @@ function transcribeRecording() {
         document.getElementById('loading-spinner').classList.remove('hidden');
         setTranscriptionVisibility(false);
 
+        try {
+            const mp3Blob = await convertWavToMp3(audioBlob);
+            const formData = new FormData();
+            formData.append('file', mp3Blob, 'recording.mp3');
+            // Rest of your code remains the same...
+        } catch (error) {
+            console.error('Error converting to MP3:', error);
+            // Handle conversion error
+        }
         const language = document.getElementById('language').value;
         if (language) {
             formData.append('language', language);
@@ -271,10 +295,16 @@ function initMediaRecorder(stream) {
         }
     });
     function setRecordingAsFile(audioBlob, filename) {
+        const fileInput = document.getElementById('fileInput');
+        if (!fileInput) {
+            console.error('fileInput element not found');
+            return;
+        }
+    
         const audioFile = new File([audioBlob], filename, { type: 'audio/wav' });
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(audioFile);
-        document.getElementById('fileInput').files = dataTransfer.files;
+        fileInput.files = dataTransfer.files;
     }
     // Updated to handle promises and errors more effectively
     mediaRecorder.addEventListener('stop', async () => {
@@ -289,7 +319,7 @@ function initMediaRecorder(stream) {
                 audioElement.hidden = false;
                 setRecordingAsFile(audioBlob, "recording.wav");
                 audioElement.load(); // Ensure the audio element loads the new blob URL
-                audioElement.play(); // Optional: Attempt to play the audio immediately
+                // Optional: Attempt to play the audio immediately
             } else {
                 console.error('No audio chunks available.');
             }

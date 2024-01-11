@@ -5,6 +5,7 @@ const fs = require('fs');
 const { OpenAI } = require('openai');
 const dotenv = require('dotenv');
 const path = require('path');
+const fluentFfmpeg = require('fluent-ffmpeg');
 
 
 dotenv.config();
@@ -55,6 +56,58 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
         console.error('Error:', error);
         res.status(500).send('Error during transcription');
     }
+});
+app.post('/convert-and-transcribe', upload.single('file'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Original file path
+    const originalFilePath = `uploads/${req.file.originalname}`;
+    // Converted MP3 file path
+    const mp3FilePath = originalFilePath.replace(/\.[^/.]+$/, ".mp3");
+
+    if (!fs.existsSync('uploads')) {
+        fs.mkdirSync('uploads');
+    }
+
+    // Save the original file temporarily
+    fs.writeFileSync(originalFilePath, req.file.buffer);
+
+    // Convert the file to MP3 format
+    fluentFfmpeg(originalFilePath)
+        .toFormat('mp3')
+        .on('end', async () => {
+            // Transcribe the MP3 file
+            try {
+                const language = req.body.language;
+                const transcriptionOptions = {
+                    file: fs.createReadStream(mp3FilePath),
+                    model: "whisper-1"
+                };
+
+                if (language && language !== 'none') {
+                    transcriptionOptions.language = language;
+                }
+
+                const transcription = await openai.audio.transcriptions.create(transcriptionOptions);
+
+                // Delete the temporary files after use
+                fs.unlinkSync(originalFilePath);
+                fs.unlinkSync(mp3FilePath);
+
+                res.json({ transcription: transcription.text });
+            } catch (transcriptionError) {
+                console.error('Error during transcription:', transcriptionError);
+                res.status(500).send('Error during transcription');
+            }
+        })
+        .on('error', (conversionError) => {
+            console.error('Error converting file:', conversionError);
+            res.status(500).json({ error: 'Error converting file', details: conversionError.message });
+        })
+        
+        .save(mp3FilePath);
 });
 app.use(express.json());
 app.post('/reformulate', async (req, res) => {
