@@ -337,7 +337,7 @@ document.getElementById('startRecording').addEventListener('click', () => {
             if (stream.active && stream.getAudioTracks().length > 0) {
                 console.log('Stream is active with audio tracks:', stream.getAudioTracks());
                 initMediaRecorder(stream);
-                mediaRecorder.start();
+                mediaRecorder.start(1000);
                 updateRecordingUI(true);
                 document.getElementById('stopRecording').disabled = false;
             } else {
