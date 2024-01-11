@@ -139,9 +139,9 @@ async function convertWavToMp3(wavBlob) {
 async function transcribeRecording() {
     // Check if there are recorded audio chunks
     if (audioChunks.length > 0) {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        const audioBlob = new Blob(audioChunks, { type: 'audio/mp4' });
         const formData = new FormData();
-        formData.append('file', audioBlob, 'recording.wav');
+        formData.append('file', audioBlob, 'recording.mp4');
 
         document.getElementById('loading-spinner').classList.remove('hidden');
         setTranscriptionVisibility(false);
@@ -293,7 +293,7 @@ function initMediaRecorder(stream) {
             return;
         }
     
-        const audioFile = new File([audioBlob], filename, { type: 'audio/wav' });
+        const audioFile = new File([audioBlob], filename, { type: 'audio/mp4' });
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(audioFile);
         fileInput.files = dataTransfer.files;
@@ -302,14 +302,14 @@ function initMediaRecorder(stream) {
     mediaRecorder.addEventListener('stop', async () => {
         try {
             if (audioChunks.length > 0) {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const audioBlob = new Blob(audioChunks, { type: 'audio/mp4' });
                 const audioUrl = URL.createObjectURL(audioBlob);
                 console.log('Recording stopped, audio available at:', audioUrl);
                 const audioElement = document.getElementById('audioPlaybackRecord');
                 const uploadLabel = document.getElementById('uploadLabel');
                 audioElement.src = audioUrl;
                 audioElement.hidden = false;
-                setRecordingAsFile(audioBlob, "recording.wav");
+                setRecordingAsFile(audioBlob, "recording.mp4");
                 audioElement.load(); // Ensure the audio element loads the new blob URL
                 // Optional: Attempt to play the audio immediately
             } else {
