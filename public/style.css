@@ -33,6 +33,39 @@ h1.text-center {
 
 
 }
+
+.sidebar{
+  background-color: var(--dark-field-bg);
+  color: var(--text-color);
+  border-right: var(--btn-border-color) 1px solid;
+  height: 100vh;
+  width: 20%;
+  float: left;
+  overflow: auto;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  padding-top: 60px;
+
+}
+
+.homepage{
+  background-color: var(--dark-field-bg);
+  color: var(--text-color);
+  border-right: var(--btn-border-color) 1px solid;
+  height: 100vh;
+  width: 80%;
+  float: right;
+  overflow: auto;
+  position: fixed;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  padding-top: 60px;
+
+
+}
 .tip-text {
   color: var(--text-color);
   margin-top: 10px; /* Adjust space between the title and the tip */
@@ -44,19 +77,11 @@ h1.text-center {
 .tip-text .fa-info-circle {
   margin-right: 5px; /* Space between icon and text */
 }
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0px;
-    width: 33.33%;
-    float: left;
-    height: 100%;
-    background-color: var(--dark-field-bg);
-}
+
 
 
 .chat-area {
-    width: 66.66%; /* Remaining area */
+    width: 80%; /* Remaining area */
     float: right; /* Align to the right side */
     /* Additional styling as required */
 }
@@ -198,22 +223,7 @@ h1.text-center {
     transition: width 0.5s; /* Smooth transition for resizing */
     padding-left: 10px;
 }
-.chat-interface-visible .transcription-section {
-  width: 33.33%;
-}
 
-.chat-interface-visible .chat-interface-section {
-  width: 66.66%;
-  display: block; /* Show the chat interface */
-}
-.chat-interface-visible .transcription-section {
-  width: 33.33%;
-}
-
-.chat-interface-visible .chat-interface-section {
-  width: 66.66%;
-  display: block; /* Show the chat interface */
-}
 .chat-interface {
   display: flex;
   flex-direction: column;
@@ -350,12 +360,12 @@ audio {
     border-top: var(--btn-border-color) 1px solid;
     margin-left: 10px;
 }
-#saved-files-list {
+.sidebar-items {
   list-style-type: none; /* Removes the default list bullet points */
   padding: 0;
 }
 
-#saved-files-list li {
+.sidebar-items li {
   cursor: pointer; /* Changes cursor to a pointer on hover */
   background-color: var(--dark-field-bg); /* Adjust background color */
   color: var(--text-color); /* Adjust text color */
@@ -365,7 +375,7 @@ audio {
   border: 1px solid var(--btn-border-color); /* Border color */
 }
 
-#saved-files-list li:hover {
+.sidebar-items  li:hover {
   background-color: var(--primary-color); /* Color change on hover */
   color: white; /* Text color on hover */
 }

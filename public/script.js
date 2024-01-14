@@ -11,7 +11,27 @@ function openTab(evt, tabName) {
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
+document.addEventListener('DOMContentLoaded', () => {
+    // Attach event listeners for Home, Record, and Upload buttons
+    document.getElementById('home').addEventListener('click', () => toggleSection('home-content'));
+    document.getElementById('record-button').addEventListener('click', () => toggleSection('record-content'));
+    document.getElementById('upload-button').addEventListener('click', () => toggleSection('upload-content'));
+    document.getElementById('toggle-conversations').addEventListener('click', toggleConversationsList);
+    
+    // Set initial view to Home
+    toggleSection('home-content');
+});
 
+function toggleSection(sectionId) {
+    document.querySelectorAll('.main-content > section').forEach(section => {
+        section.classList.toggle('hidden', section.id !== sectionId);
+    });
+}
+
+function toggleConversationsList() {
+    const conversationsList = document.querySelector('.conversations-list');
+    conversationsList.classList.toggle('hidden');
+}
 function getActiveTab() {
     if (document.getElementById('Recording').style.display === 'block') {
         return 'Recording';

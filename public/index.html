@@ -19,70 +19,78 @@
 </body>
 <body>
   <div class="main-container">
-      <!-- Transcription Section -->
-      <div class="container col-md-4 col-12 transcription-section">
-          <h1 class="text-center"></h1>
-          
-          <!-- Tab Links -->
-          <div class="tip-text text-center">
-            <i class="fas fa-info-circle"></i>
-            Currently, the maximum audio length is limited to 15 min.
-        </div>
-          <div class="tab">
-            <button class="tablink" onclick="openTab(event, 'Uploading')"><i class="fa-solid fa-file-arrow-up"></i> Upload</button>
-            <button class="tablink" onclick="openTab(event, 'Recording')"><i class="fa-solid fa-microphone-lines"></i> Record</button>
-            
-            
-        </div>
-        
-        
-        <form id="upload-form">
-            
-            <div id="Recording" class="tabcontent">
-                <button id="startRecording" class="btn btn-secondary"><i class="fa-solid fa-microphone"></i> Start Recording</button>
-                <button id="stopRecording" class="btn btn-secondary" disabled><i class="fa-solid fa-microphone-slash"></i> Stop Recording</button>
-                <audio id="audioPlaybackRecord" controls hidden ></audio>
-                <input type="file" id="fileInput" style="display: none;">
-            </div>
-            
-            <div id="Uploading" class="tabcontent">
-              <div class="upload-area">
-                <label id="uploadLabel" for="fileUpload" class="form-label">Upload your sound file</label>
-                <input type="file" class="form-control" id="fileUpload" accept="audio/*">
-                <audio id="audioPlaybackUpload" controls hidden ></audio>
-              </div>
-                <div class="example-audios">
-                <button id="audio1" class="btn btn-info">Example 1</button>
-                <button id="audio2" class="btn btn-info">Example 2</button>
-                <button id="audio3" class="btn btn-info">Example 3</button>
-            </div>
-            </div>
-            
-            <div class="mb-3 language-area">
-                <label for="language">Language:</label>
-                <select id="language" class="select-language form-control">
-                    <option value="none">Automatically detect</option>
-                    <option value="en">English</option>
-                    <option value="sl">Slovenian</option>
-                </select>
-            </div>
-            <button id="transcribeButton" type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Transcribe</button>
-            
-            
-        </form>
-
+    
+      
+    
+        <div class="sidebar">
           <!-- File Listing Section -->
+          <h1 class="text-center"></h1>
+          <div class="control-tabs">
+            <ul class="sidebar-items">
+                <li>Home</li>
+            </ul>
+          </div>
           <div class="file-listing-section hidden">
+            
               <h4>Saved Files</h4>
-              <ul id="saved-files-list"></ul>
+              <ul id="saved-files-list" class="sidebar-items"></ul>
           </div>
       </div>
 
       <!-- Chat Interface Section (Initially Hidden) -->
-      <div class="chat-area col-md-8 chat-interface-section hidden">
+      <div class="chat-area col-md-8 chat-interface-section">
         <div class="chat-container">
             <!-- Transcription Results (Initially Hidden) -->
-            
+                    
+            <div class="homepage">
+                <!-- Transcription Section -->
+                <div class="container col-md-4 col-12 transcription-section">
+                    <h1 class="text-center"></h1>
+                    
+                    <!-- Tab Links -->
+                    <div class="tip-text text-center">
+                        <i class="fas fa-info-circle"></i>
+                        Currently, the maximum audio length is limited to 15 min.
+                    </div>
+                    <div class="tab">
+                        	<button class="tablink" onclick="openTab(event, 'Uploading')"><i class="fa-solid fa-file-arrow-up"></i> Upload</button>
+                        <button class="tablink" onclick="openTab(event, 'Recording')"><i class="fa-solid fa-microphone-lines"></i> Record</button>
+                    </div>
+                
+                </div>
+                <form id="upload-form">
+                    
+                    <div id="Recording" class="tabcontent">
+                        <button id="startRecording" class="btn btn-secondary"><i class="fa-solid fa-microphone"></i> Start Recording</button>
+                        <button id="stopRecording" class="btn btn-secondary" disabled><i class="fa-solid fa-microphone-slash"></i> Stop Recording</button>
+                        <audio id="audioPlaybackRecord" controls hidden ></audio>
+                        <input type="file" id="fileInput" style="display: none;">
+                    </div>
+                    
+                    <div id="Uploading" class="tabcontent">
+                        <div class="upload-area">
+                        <label id="uploadLabel" for="fileUpload" class="form-label">Upload your sound file</label>
+                        <input type="file" class="form-control" id="fileUpload" accept="audio/*">
+                        <audio id="audioPlaybackUpload" controls hidden ></audio>
+                        </div>
+                        <div class="example-audios">
+                        <button id="audio1" class="btn btn-info">Example 1</button>
+                        <button id="audio2" class="btn btn-info">Example 2</button>
+                        <button id="audio3" class="btn btn-info">Example 3</button>
+                    </div>
+                    </div>
+                    
+                    <div class="mb-3 language-area">
+                        <label for="language">Language:</label>
+                        <select id="language" class="select-language form-control">
+                            <option value="none">Automatically detect</option>
+                            <option value="en">English</option>
+                            <option value="sl">Slovenian</option>
+                        </select>
+                    </div>
+                    <button id="transcribeButton" type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Transcribe</button>
+                </form>
+            </div>
             <div class="transcription-results-container hidden">
                 <h2>Transcription Results</h2>
                 <div id="transcription-display-area">
@@ -164,4 +172,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
